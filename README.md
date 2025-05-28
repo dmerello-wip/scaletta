@@ -1,140 +1,103 @@
-# Songs and Users API
+# My Project Monorepo
 
-## Description
-A Node.js Express application for managing songs and user authentication via a RESTful API.
-
-## Features
-*   User registration and login (JWT authentication)
-*   CRUD operations for Songs (Create, Read, Update, Delete)
-*   Protected song routes
+This project is a monorepo containing a backend Express application and a frontend React application.
 
 ## Project Structure
-*   `models/`: Contains Mongoose schemas for database models (User, Song).
-*   `routes/`: Defines API routes for different resources (authentication, songs).
-*   `controllers/`: Implements the logic for handling requests and interacting with models.
-*   `middleware/`: Contains custom middleware, such as the authentication middleware.
-*   `server.js`: The main entry point for the application, sets up the server and database connection.
-*   `.env`: Stores environment variables (not committed to Git).
 
-## Prerequisites
-*   Node.js and npm (Node Package Manager)
-*   MongoDB (a local instance or a cloud-hosted one like MongoDB Atlas)
+- `my-project/` (Root directory)
+  - `backend/`        # Node.js Express application
+  - `frontend/`       # React application
+  - `package.json`    # Root package.json for managing both apps
+  - `README.md`       # This file
 
-## Setup and Installation
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18.x or later recommended)
+- npm (comes with Node.js)
+- MongoDB (for the backend application)
+
+### Installation
+
 1.  **Clone the repository:**
     ```bash
     git clone <your-repository-url>
+    cd <repository-directory-name>
     ```
-2.  **Navigate to the project directory:**
-    ```bash
-    cd <project-directory>
-    ```
-3.  **Install dependencies:**
+2.  **Install all dependencies:**
+    This command will install dependencies for the root, backend, and frontend applications using the `postinstall` script in the root `package.json`.
     ```bash
     npm install
     ```
-4.  **Create a `.env` file** in the root directory. You will need to create this file manually.
-    It should contain the following variables:
-    ```env
-    MONGO_URI="your_mongodb_connection_string"
-    JWT_SECRET="your_very_strong_and_secret_jwt_key"
-    PORT=5000
-    ```
-5.  **Update the `.env` file:**
-    *   Replace `"your_mongodb_connection_string"` with your actual MongoDB connection URI.
-    *   Replace `"your_very_strong_and_secret_jwt_key"` with a long, random, and strong string for JWT signing.
-    *   You can change `PORT` if needed, otherwise it defaults to 5000.
+3.  **Backend Configuration (.env):**
+    The backend application requires a `.env` file for configuration (e.g., database connection URI, JWT secret).
+    - Navigate to the `backend` directory: `cd backend`
+    - Create a `.env` file by copying the example if one exists, or create it manually.
+    - It should contain variables like:
+      ```env
+      MONGO_URI="your_mongodb_connection_string"
+      JWT_SECRET="your_very_strong_and_secret_jwt_key"
+      PORT=5001 # Or your preferred port for the backend
+      ```
+    - Replace placeholder values with your actual configuration.
+    - Return to the root directory: `cd ..`
 
-## Running the Application
-1.  **Start the server:**
+### Running the Applications
+
+**To run both backend and frontend concurrently (recommended for development):**
+
+From the root directory:
+```bash
+npm run dev
+```
+This command uses `concurrently` to start:
+- The backend development server (e.g., on `http://localhost:5001` as per your backend's `.env` or `server.js`).
+- The frontend React development server (usually on `http://localhost:3000`).
+
+**To run the applications individually:**
+
+From the root directory:
+
+-   **Backend:**
     ```bash
-    npm start
+    npm run dev:backend
     ```
-    (This assumes you have a `start` script in your `package.json` like `"start": "node server.js"`.)
+    This script typically runs the backend server in development mode (e.g., using `nodemon`).
+    To run the backend's start script (e.g., for production builds, if configured):
+    ```bash
+    npm run start:backend
+    ```
+    The backend's `package.json` is located at `backend/package.json`.
 
-2.  The server will typically start on `http://localhost:5000` (or the port specified in your `.env` file).
+-   **Frontend:**
+    ```bash
+    npm run dev:frontend
+    ```
+    This script starts the React development server. The frontend's `package.json` is located at `frontend/package.json`.
+
+## Available Scripts (Root `package.json`)
+
+The root `package.json` provides the following main scripts:
+
+-   `npm install`: Installs dependencies for the root project and triggers `postinstall` which installs dependencies for both `backend/` and `frontend/`.
+-   `npm run dev`: Starts both backend and frontend development servers concurrently. Ideal for active development.
+-   `npm run dev:backend`: Starts only the backend development server.
+-   `npm run dev:frontend`: Starts only the frontend development server (React dev server).
+-   `npm run start:backend`: Runs the `start` script defined in `backend/package.json` (often used for running production builds).
+-   `npm start`: An alias for `npm run start:backend`.
+
+### Utility Scripts (Root `package.json`)
+
+-   `npm run install:backend`: Installs dependencies for the `backend/` application only.
+-   `npm run install:frontend`: Installs dependencies for the `frontend/` application only.
+
+(Note: The `postinstall` script in the root `package.json` automatically runs `install:backend` and `install:frontend` after the root `npm install` completes.)
 
 ## API Endpoints
 
-### Authentication (`/api/auth`)
-*   **`POST /api/auth/register`**
-    *   Description: Register a new user.
-    *   Access: Public
-    *   Request Body:
-        ```json
-        {
-          "username": "testuser",
-          "password": "password123"
-        }
-        ```
-    *   Response: `201 Created` with a success message.
+For details on the backend API endpoints, please refer to the documentation or `README.md` potentially located within the `backend/` directory. The original API included features for:
+*   User registration and login (JWT authentication)
+*   CRUD operations for Songs
 
-*   **`POST /api/auth/login`**
-    *   Description: Login an existing user.
-    *   Access: Public
-    *   Request Body:
-        ```json
-        {
-          "username": "testuser",
-          "password": "password123"
-        }
-        ```
-    *   Response: `200 OK` with a JWT token.
-        ```json
-        {
-          "token": "your_jwt_token_here"
-        }
-        ```
-
-### Songs (`/api/songs`)
-*All song routes require a Bearer Token in the `Authorization` header for authentication (e.g., `Authorization: Bearer your_jwt_token_here`).*
-
-*   **`POST /api/songs`**
-    *   Description: Create a new song.
-    *   Access: Private
-    *   Request Body:
-        ```json
-        {
-          "title": "Song Title",
-          "author": "Author Name",
-          "words": "HTML or plain text lyrics",
-          "category": "Pop",
-          "typology": "Ballad",
-          "tone": "Major"
-        }
-        ```
-    *   Response: `201 Created` with the newly created song object.
-
-*   **`GET /api/songs`**
-    *   Description: Get all songs.
-    *   Access: Private
-    *   Response: `200 OK` with an array of song objects.
-
-*   **`GET /api/songs/:id`**
-    *   Description: Get a specific song by its ID.
-    *   Access: Private
-    *   Response: `200 OK` with the song object, or `404 Not Found`.
-
-*   **`PUT /api/songs/:id`**
-    *   Description: Update a specific song by its ID.
-    *   Access: Private
-    *   Request Body: (Include fields to update)
-        ```json
-        {
-          "title": "Updated Song Title",
-          "category": "Rock"
-        }
-        ```
-    *   Response: `200 OK` with the updated song object, or `404 Not Found`.
-
-*   **`DELETE /api/songs/:id`**
-    *   Description: Delete a specific song by its ID.
-    *   Access: Private
-    *   Response: `200 OK` with a success message, or `404 Not Found`.
-
-## Error Handling
-The API returns standard HTTP status codes to indicate the success or failure of a request. Error responses are in JSON format and typically include a `msg` field with details about the error. For example:
-*   `400 Bad Request`: For validation errors or malformed requests.
-*   `401 Unauthorized`: For missing or invalid authentication tokens.
-*   `404 Not Found`: When a requested resource does not exist.
-*   `500 Internal Server Error`: For unexpected server-side issues.
+This section can be expanded or moved to `backend/README.md` as appropriate.
