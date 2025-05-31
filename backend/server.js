@@ -15,6 +15,7 @@ const app = express();
 
 // Connect to MongoDB
 const MONGO_URI = process.env.MONGO_URI;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 if (!MONGO_URI) {
   console.error('FATAL ERROR: MONGO_URI is not defined.');
@@ -32,7 +33,7 @@ mongoose.connect(MONGO_URI)
 
 // Middleware to enable CORS
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: FRONTEND_URL,
   credentials: true
 }));
 
