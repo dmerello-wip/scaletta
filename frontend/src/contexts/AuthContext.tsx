@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+// REMOVE: import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   token: string | null;
@@ -12,8 +12,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // To prevent premature rendering
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  // REMOVE: const navigate = useNavigate();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
-    navigate('/login'); // Redirect to login on logout
+    // REMOVE: navigate('/login');
   };
 
   const isAuthenticated = !!token;

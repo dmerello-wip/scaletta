@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'; // Import useAuth
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  // const [isSuccess, setIsSuccess] = useState(false); // isSuccess can be inferred from successful login action
+  const navigate = useNavigate();
+  const { login } = useAuth(); // Get login function from AuthContext
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setMessage('');
-    setIsSuccess(false);
 
     try {
       const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/auth/login`;
@@ -29,28 +30,25 @@ const Login: React.FC = () => {
       const data = await response.json();
 
       if (response.ok && data.token) {
-        setMessage('Login successful! Redirecting...');
-        setIsSuccess(true);
-        localStorage.setItem('token', data.token); // Store the token
-        setUsername(''); // Clear form
-        setPassword(''); // Clear form
+        login(data.token); // Call context login function
+        setMessage('Login successful! Redirecting...'); // Keep message for user feedback
+        // Clear form
+        setUsername('');
+        setPassword('');
         navigate('/songs'); // Redirect to /songs
       } else {
         setMessage(data.msg || 'Login failed. Please check your credentials.');
-        setIsSuccess(false);
       }
     } catch (error) {
       console.error('Login error:', error);
       setMessage('An unexpected error occurred. Please try again later.');
-      setIsSuccess(false);
     }
   };
 
   const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setter(e.target.value);
-    if (message) { // Clear message when user starts typing
+    if (message) {
       setMessage('');
-      setIsSuccess(false);
     }
   };
 
@@ -86,7 +84,8 @@ const Login: React.FC = () => {
               />
             </div>
             {message && (
-              <p className={`text-sm ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
+              // Determine color based on whether 'successful' is in the message or not for simplicity
+              <p className={`text-sm ${message.includes('successful') ? 'text-green-600' : 'text-red-600'}`}>
                 {message}
               </p>
             )}
