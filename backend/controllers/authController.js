@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 // require('dotenv').config(); // We'll configure this in the main app file
 
-const registerUser = async (req, res) => {
+async function registerUser(req, res) {
   const { username, password } = req.body;
 
   try {
@@ -27,9 +27,9 @@ const registerUser = async (req, res) => {
     console.error(err.message);
     res.status(500).send('Server error');
   }
-};
+}
 
-const loginUser = async (req, res) => {
+async function loginUser(req, res) {
   const { username, password } = req.body;
 
   try {
@@ -72,16 +72,9 @@ const loginUser = async (req, res) => {
     console.error(err.message);
     res.status(500).send('Server error');
   }
-};
+}
 
-module.exports = {
-  registerUser,
-  loginUser,
-  logoutUser,
-  authStatus,
-};
-
-const logoutUser = (req, res) => {
+function logoutUser(req, res) {
   res.cookie('token', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -89,9 +82,9 @@ const logoutUser = (req, res) => {
     expires: new Date(0), // Set expiry to a past date
   });
   res.json({ msg: 'Logout successful' });
-};
+}
 
-const authStatus = (req, res) => {
+function authStatus(req, res) {
   try {
     const token = req.cookies.token;
     if (!token) {
@@ -118,4 +111,11 @@ const authStatus = (req, res) => {
     console.error('Auth status error:', err.message); // Log specific error
     res.status(500).send('Server error during authentication status check');
   }
+}
+
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  authStatus,
 };
