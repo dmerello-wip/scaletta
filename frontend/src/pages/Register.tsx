@@ -86,7 +86,7 @@ const Register: React.FC = () => {
             )}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full mt-6">
               Register
             </Button>
           </CardFooter>

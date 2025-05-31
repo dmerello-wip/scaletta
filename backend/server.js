@@ -1,8 +1,11 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const songRoutes = require('./routes/songRoutes');
+
+
 
 // Load environment variables
 dotenv.config();
@@ -24,6 +27,14 @@ mongoose.connect(MONGO_URI)
     console.error('MongoDB connection error:', err);
     process.exit(1); // Exit the application on connection error
   });
+
+
+
+// Middleware to enable CORS
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
