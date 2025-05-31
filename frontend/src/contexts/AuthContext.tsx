@@ -14,7 +14,7 @@ interface AuthContextType {
   login: (credentials: { username?: string; password?: string; email?: string }) => Promise<void>;
   logout: () => Promise<void>;
   checkAuthStatus: () => Promise<void>;
-  // csrfToken: string | null; // No need to expose via context, it's an internal detail
+  csrfToken: string | null; // MODIFIED: Added to expose CSRF token
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -182,7 +182,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, currentUser, isLoading, login, logout, checkAuthStatus }}>
+    <AuthContext.Provider value={{ isAuthenticated, currentUser, isLoading, login, logout, checkAuthStatus, csrfToken }}> {/* MODIFIED: Added csrfToken */}
       {children}
     </AuthContext.Provider>
   );
