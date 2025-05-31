@@ -40,6 +40,32 @@ app.use(cors({
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+// Middleware to parse cookies
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+// CSRF Protection Setup
+const csrf = require('csurf');
+const csrfProtection = csrf({
+  cookie: {
+    key: '_csrf-secret',
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict' // Using 'Strict' for better security
+  }
+});
+
+// Route to get CSRF token - must be before global CSRF protection if applied selectively,
+// or use csrfProtection middleware specifically for this route if CSRF is global.
+// For SPA, it's common to have this endpoint available.
+app.get('/api/csrf-token', csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// Apply CSRF protection to all mutating routes (POST, PUT, DELETE, PATCH)
+// csurf middleware needs to be applied after cookie parser and body parser.
+app.use(csrfProtection);
+
 // Mount routes
 // Note: Task description said /api/users for authRoutes, but /api/auth was used in authRoutes.js.
 // I will use /api/auth as it's more consistent with the route file.
@@ -48,13 +74,19 @@ app.use('/api/songs', songRoutes);
 
 // Basic Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  // CSRF error handling
+  if (err.code === 'EBADCSRFTOKEN') {
+    console.error('CSRF Token Error:', err.message);
+    return res.status(403).json({ msg: 'Invalid CSRF token. Please refresh and try again.' });
+  }
+
+  console.error('Unhandled error:', err.stack);
   // If headersSent is true, it means a response has already been sent,
   // so delegate to the default Express error handler to close the connection.
   if (res.headersSent) {
     return next(err);
   }
-  res.status(500).send('Something broke!');
+  res.status(500).json({ msg: 'Server error. Something broke!' }); // Send JSON response for API
 });
 
 // Start the server

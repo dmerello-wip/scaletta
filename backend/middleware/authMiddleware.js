@@ -5,16 +5,19 @@ const User = require('../models/User');
 const protect = async (req, res, next) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    try {
-      // Get token from header
-      token = req.headers.authorization.split(' ')[1];
+  // Check for token in httpOnly cookie
+  if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  }
 
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  // If no token found in cookies, return unauthorized
+  if (!token) {
+    return res.status(401).json({ msg: 'Not authorized, no token' });
+  }
+
+  try {
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Get user from the token
       // We select '-password' to exclude the password hash
@@ -33,10 +36,7 @@ const protect = async (req, res, next) => {
       res.status(500).json({ msg: 'Server error during token verification' });
     }
   }
-
-  if (!token) {
-    return res.status(401).json({ msg: 'Not authorized, no token' });
-  }
+  // The "if (!token)" check is now at the beginning after attempting to extract from cookies.
 };
 
 module.exports = { protect };

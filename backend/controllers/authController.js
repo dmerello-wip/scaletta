@@ -59,7 +59,13 @@ const loginUser = async (req, res) => {
       { expiresIn: '1h' }, // Token expires in 1 hour
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.cookie('token', token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+          sameSite: 'Strict',
+          maxAge: 3600000, // 1 hour
+        });
+        res.json({ msg: 'Login successful', user: { id: user.id, username: user.username } });
       }
     );
   } catch (err) {
@@ -71,4 +77,45 @@ const loginUser = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
+  logoutUser,
+  authStatus,
+};
+
+const logoutUser = (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+    expires: new Date(0), // Set expiry to a past date
+  });
+  res.json({ msg: 'Logout successful' });
+};
+
+const authStatus = (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.json({ isAuthenticated: false, user: null });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        // If token is invalid (e.g., expired, tampered), clear it
+        res.cookie('token', '', {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'Strict',
+          expires: new Date(0),
+        });
+        return res.json({ isAuthenticated: false, user: null });
+      }
+      res.json({
+        isAuthenticated: true,
+        user: { id: decoded.user.id, username: decoded.user.username },
+      });
+    });
+  } catch (err) {
+    console.error('Auth status error:', err.message); // Log specific error
+    res.status(500).send('Server error during authentication status check');
+  }
 };
