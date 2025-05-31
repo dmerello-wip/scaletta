@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react'; // Removed useContext as it's no longer directly used here
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext'; // MODIFIED
 import { Button } from '@/components/ui/button'; // Imported Shadcn Button
 
 const Navbar: React.FC = () => {
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth(); // MODIFIED
 
   if (!authContext) {
     // This case should ideally not happen if AuthProvider is set up correctly

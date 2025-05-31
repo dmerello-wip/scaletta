@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react'; // Removed useContext
 import { useNavigate, Link } from 'react-router-dom'; // Added Link
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext'; // Added useAuth
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
@@ -16,7 +16,7 @@ const CreateSong: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth(); // Changed to useAuth()
   const navigate = useNavigate();
 
   if (!authContext) {

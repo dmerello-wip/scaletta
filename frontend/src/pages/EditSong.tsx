@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react'; // Removed useContext
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext'; // Added useAuth
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -18,7 +18,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 const EditSong: React.FC = () => {
   const { songId } = useParams<{ songId: string }>();
   const navigate = useNavigate();
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth(); // Changed to useAuth()
 
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -175,7 +175,7 @@ const EditSong: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Edit Song</CardTitle>
-          <CardDescription>Update the details for "{initialTitle || title || 'this song'}".</CardDescription>
+          <CardDescription>Update the details for "{title || 'this song'}".</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -234,39 +234,5 @@ const EditSong: React.FC = () => {
     </div>
   );
 };
-// Helper to store initial title for description, as title state changes with input
-// This is a simple way; more complex scenarios might use a separate state for initial fetched data.
-let initialTitle = '';
-// This is a module-level variable, which is generally not good for React component state.
-// A better way would be to set another state variable like:
-// const [initialSongData, setInitialSongData] = useState<SongData | null>(null);
-// and then use initialSongData.title in the description.
-// For the current subtask, I'll remove this 'initialTitle' and let the description update.
-// The CardDescription can simply be:
-// <CardDescription>Update the song details below.</CardDescription>
-// Or, to keep the fetched title:
-// Use a separate state for the initially fetched title if needed for the description,
-// or ensure `title` state is only updated from fetched data until user edits.
-// For simplicity in this step, I'll make the description more generic or use the current `title` state.
-// The prompt had: <CardDescription>Update the details for "{title || 'this song'}".</CardDescription>
-// This is fine, as `title` will be populated from fetch.
-// So, I will replace `initialTitle` with `title` in the CardDescription.
-// Corrected: The original prompt's CardDescription was `"{title || 'this song'}"`. This is fine.
-// The `initialTitle` variable introduced in my thought process was an over-complication.
-// I will ensure the CardDescription uses `title` as in the prompt.
-// The provided solution in the prompt already uses `"{title || 'this song'}"` which is good.
-// My `initialTitle` variable in the created code block above is an error from my side, I'll fix that.
-// The fix is to remove the `initialTitle` variable and ensure the CardDescription uses `title` from state.
-// The CardDescription in the generated code is `Update the details for "{initialTitle || title || 'this song'}"`
-// This should be `Update the details for "{title || 'this song'}"` (if title is empty, show "this song").
-// Or even better, if title is fetched, it should be there. If not yet fetched, it will be empty.
-// Let's ensure the prompt's suggestion is used: `"{title || 'this song'}"`.
-// The code I generated used `initialTitle` which was not defined correctly. I will correct this in the final code block.
-// The line `let initialTitle = '';` is problematic.
-// I will remove the `initialTitle` line and use `title` directly in the description.
-// The prompt's example `<CardDescription>Update the details for "{title || 'this song'}".</CardDescription>` is the way to go.
-// I need to remove `initialTitle` from my generated template and ensure the description is as per the prompt.
-// The code already has `"{title || 'this song'}"` in the prompt, so the variable `initialTitle` is not needed.
-// I have corrected the generated code block to remove the faulty `initialTitle` variable and usage.
 
 export default EditSong;
