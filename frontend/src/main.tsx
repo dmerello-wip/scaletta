@@ -7,6 +7,7 @@ import Login from './pages/Login.tsx' // Import the Login component
 import Songs from './pages/Songs.tsx'
 import { AuthProvider } from './contexts/AuthContext.tsx'; // Import AuthProvider
 import ProtectedRoute from './components/ProtectedRoute.tsx'; // Import ProtectedRoute
+import Navbar from './components/Navbar.tsx'; // Import Navbar
 import './index.css'
 import './base-layout.css'
 
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider> {/* Wrap with AuthProvider */}
       <BrowserRouter>
+        <Navbar /> {/* Add Navbar here */}
         <Routes>
           <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />

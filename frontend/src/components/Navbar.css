@@ -1,0 +1,41 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #f0f0f0; /* Light grey background, can be changed later */
+  border-bottom: 1px solid #cccccc;
+}
+
+.navbar-left a,
+.navbar-right a {
+  margin: 0 0.5rem;
+  text-decoration: none;
+  color: #333;
+}
+
+.navbar-left a:hover,
+.navbar-right a:hover {
+  text-decoration: underline;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Style for the logout button to make it look like a link */
+.logout-button {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  margin: 0 0.5rem;
+  padding: 0;
+  font-size: inherit; /* Inherit font size from parent */
+  font-family: inherit; /* Inherit font family from parent */
+}
+
+.logout-button:hover {
+  text-decoration: underline;
+}
