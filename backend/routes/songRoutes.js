@@ -16,8 +16,8 @@ router.post('/', protect, createSong);
 
 // @route   GET /api/songs
 // @desc    Get all songs
-// @access  Private
-router.get('/', protect, getAllSongs);
+// @access  Public
+router.get('/', getAllSongs);
 
 // @route   GET /api/songs/:id
 // @desc    Get a single song by ID
