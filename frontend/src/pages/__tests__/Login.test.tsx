@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import type { MockedFunction } from 'vitest'; // Changed to type-only import
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../../contexts/AuthContext'; // Adjust path if needed
@@ -15,7 +16,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock global fetch
-global.fetch = vi.fn();
+global.fetch = vi.fn() as MockedFunction<typeof fetch>;
 
 const AllTheProviders: React.FC<{children: React.ReactNode}> = ({ children }) => {
   return (
@@ -53,10 +54,13 @@ describe('Login Page', () => {
   });
 
   it('should display error message on failed login', async () => {
-    (global.fetch as vi.Mock).mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ msg: 'Invalid credentials' }),
-    });
+    // No need to cast global.fetch here if it's already typed correctly above
+    (global.fetch as MockedFunction<typeof fetch>).mockResolvedValueOnce(
+      new Response(JSON.stringify({ msg: 'Invalid credentials' }), {
+        status: 401, // Or any appropriate error status
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
 
     render(<Login />, { wrapper: AllTheProviders });
 
@@ -73,10 +77,13 @@ describe('Login Page', () => {
 
   it('should call login context function and navigate on successful login', async () => {
     const mockToken = 'fake-jwt-token';
-    (global.fetch as vi.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ token: mockToken }),
-    });
+    // No need to cast global.fetch here if it's already typed correctly above
+    (global.fetch as MockedFunction<typeof fetch>).mockResolvedValueOnce(
+      new Response(JSON.stringify({ token: mockToken }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
 
     // We need to spy on localStorage.setItem because AuthContext calls it.
     // Or, more simply, check its effect.
