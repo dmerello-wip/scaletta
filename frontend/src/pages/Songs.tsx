@@ -20,15 +20,14 @@ const Songs: React.FC = () => {
 
   useEffect(() => {
     const fetchSongs = async () => {
-      // Only fetch songs if authenticated and auth is not loading
-      if (!isAuthenticated || isAuthLoading) {
-        // If not authenticated and auth is done loading, ProtectedRoute should have redirected.
-        // If auth is still loading, wait for it to complete.
-        if (!isAuthLoading) setError('Not authenticated. Please login.');
-        setIsLoadingSongs(false);
+      // Wait for auth loading to complete before deciding to fetch or use currentUser
+      if (isAuthLoading) {
+        setIsLoadingSongs(false); // Ensure loading state is reset if we return early
         return;
       }
 
+      // Now, fetch songs regardless of authentication status.
+      // User-specific actions (like personalizing content) can be based on isAuthenticated.
       setIsLoadingSongs(true);
       setError(null);
 
@@ -92,13 +91,10 @@ const Songs: React.FC = () => {
     return <div className="flex items-center justify-center min-h-screen"><p>Verifying authentication...</p></div>;
   }
 
-  // If after auth check, user is not authenticated, ProtectedRoute should handle redirection.
-  // This is a fallback message or could be removed if ProtectedRoute is reliable.
-  if (!isAuthenticated) {
-     return <div className="flex items-center justify-center min-h-screen"><p>Redirecting to login...</p></div>;
-  }
+  // Songs page is now public, so we don't redirect if not authenticated.
+  // We just won't show user-specific content.
 
-  // Display loading for songs after auth is confirmed
+  // Display loading for songs
   if (isLoadingSongs) {
     return <div className="flex items-center justify-center min-h-screen"><p>Loading songs...</p></div>;
   }
@@ -109,22 +105,25 @@ const Songs: React.FC = () => {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
             <CardTitle className="text-2xl font-bold">
-              Your Songs
+              Songs
             </CardTitle>
-            {currentUser && (
+            {isAuthenticated && currentUser && (
               <p className="text-sm text-muted-foreground">
                 Welcome, {currentUser.username}!
               </p>
             )}
           </div>
-          <Button onClick={handleLogout} variant="outline">
-            Logout
-          </Button>
+          {isAuthenticated && (
+            <Button onClick={handleLogout} variant="outline">
+              Logout
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
           {error && (
             <p className="text-red-600 bg-red-100 p-3 rounded-md text-center mb-4">{error}</p>
           )}
+          {/* Ensure isLoadingSongs is false before showing "No songs found" */}
           {!error && songs.length === 0 && !isLoadingSongs && (
             <p className="text-center text-gray-500">No songs found. Add some!</p>
           )}

@@ -18,11 +18,13 @@ createRoot(document.getElementById('root')!).render(
         <Navbar /> {/* Add Navbar here */}
         <Routes>
           <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
+        {/* Remove register from here */}
         <Route path="/login" element={<Login />} /> {/* Add the login route */}
           <Route element={<ProtectedRoute />}> {/* Wrap protected routes */}
-            <Route path="/songs" element={<Songs />} />
+            <Route path="/register" element={<Register />} /> {/* Register route is now protected */}
+            {/* Other protected routes will go here if any */}
           </Route>
+          <Route path="/songs" element={<Songs />} /> {/* Songs route is now public */}
       </Routes>
     </BrowserRouter>
     </AuthProvider>
